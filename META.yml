@@ -1,0 +1,16 @@
+--- #YAML:1.0
+name: URI-Title
+version: 0.1
+license: perl
+distribution_type: module
+requires:
+  LWP: 0.01
+  Test::More: 0.01
+recommends: {}
+build_requires: {}
+conflicts: {}
+provides:
+  URI::Title:
+    file: lib/URI/Title.pm
+    version: 0.1
+generated_by: Module::Build version 0.21
