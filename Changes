@@ -1,12 +1,22 @@
-Revision history for URI::Title
+2004-08-13  Tom Insam  <tom@jerakeen.org>
 
-0.1 2004/01/17
-  - Initial release. It doesn't suck, much.
-  
-0.3 2004/03/16
-  - Don't run tests without a net connection
-  - More special cases.
-  - Variable header size downloading for pathological cases
-  - Much better whitespace trimming
+  * Added quick special case for iTMS urls.
+  * Bumped version to 1.0, I quite like this code now.
+
+2004-05-06  Tom Insam  <tom@jerakeen.org>
+  * 0.5 Release
+  * Use File::Type to detech mime types and hand off to sub-modules
+  * Use Module::Pluggable to discover sub-modules
+  * Add Image, MP3 and PDF naming modules
+
+2004-03-16  Tom Insam  <tom@jerakeen.org>
+  * 0.3 Release (Revision 643)
+  * Don't run tests without a net connection
+  * More special cases.
+  * Variable header size downloading for pathological cases
+  * Much better whitespace trimming
+
+2004-01-17  Tom Insam  <tom@jerakeen.org>
+  * 0.1 Release. It doesn't suck, much.
   
   

@@ -60,86 +60,131 @@ package URI::Title;
 use base qw(Exporter);
 our @EXPORT_OK = qw( title );
 
-our $VERSION = '0.3';
+our $VERSION = '1';
 
+use Module::Pluggable (search_path => ['URI::Title'], require => 1 );
+use File::Type;
+
+use LWP::Simple;
 use LWP::UserAgent;
 use HTTP::Request;
 use HTTP::Response;
-#use File::Type;
-use HTML::Entities;
 
 sub get_limited {
-    my $url = shift;
-    my $size = shift || 8*1024;
-    my $ua = LWP::UserAgent->new;
-    $ua->timeout(20);
-    $ua->max_size($size);
-    my $req = HTTP::Request->new(GET => $url);
-    $req->header( Range => "bytes=0-$size" );
-    my $res = $ua->request($req);
-    return unless $res->is_success;
-    return $res->content;
+  my $url = shift;
+  my $size = shift || 16*1024;
+  my $ua = LWP::UserAgent->new;
+  $ua->timeout(20);
+  $ua->max_size($size);
+  my $req = HTTP::Request->new(GET => $url);
+  $req->header( Range => "bytes=0-$size" );
+  my $res = $ua->request($req);
+  return unless $res->is_success;
+  return $res->content;
+}
+
+sub get_end {
+  my $url = shift;
+  my $size = shift || 16*1024;
+
+  my (undef, $length) = head($url);
+
+  return unless $length; # We can't get the length, and we're _not_
+                         # going to get the whole thing.
+
+  my $start = $length - $size;
+
+  my $ua = LWP::UserAgent->new;
+  $ua->timeout(20);
+  $ua->max_size($size);
+
+  my $req = HTTP::Request->new(GET => $url);
+  $req->header( Range => "bytes=$start-$length" );
+  my $res = $ua->request($req);
+
+  return unless $res->is_success;
+  return $res->content;
 }
 
 sub get_all {
-    my $url = shift;
-    my $ua = LWP::UserAgent->new;
-    $ua->timeout(20);
-    my $req = HTTP::Request->new(GET => $url);
-    my $res = $ua->request($req);
-    return unless $res->is_success;
-    return $res->content;
+  my $url = shift;
+  my $ua = LWP::UserAgent->new;
+  $ua->timeout(20);
+  my $req = HTTP::Request->new(GET => $url);
+  my $res = $ua->request($req);
+  return unless $res->is_success;
+  return $res->content;
+}
+
+# cache
+our $HANDLERS;
+sub handlers {
+  my @plugins = plugins();
+  return $HANDLERS if $HANDLERS;
+  for my $plugin (@plugins) {
+    for my $type ($plugin->types) {
+      $HANDLERS->{$type} = $plugin;
+    }
+  }
+  return $HANDLERS;
 }
 
 sub title {
-    my $url = shift;
-
-#    my $type = File::Type->new->checktype_contents($data);
-
-    my $title;
-    my $match;
-    my $size = 16 * 1024;
-    
-    if ($url =~ /theregister\.co\.uk/i) {
-        $match = '<div class="storyhead">';
-
-    } elsif ($url =~ /timesonline\.co\.uk/i) {
-        $match = '<span class="headline">';
-
-    } elsif ($url =~ /use\.perl\.org\/~([^\/]+).*journal\/\d/i) {
-        $match = '<FONT FACE="geneva,verdana,sans-serif" SIZE="1"><B>';
-        $title = "use.perl journal of $1 - ";
-
-    } elsif ($url =~ /pants\.heddley\.com.*#(.*)$/i) {
-        my $id = $1;
-        $match = 'id="a'.$id.'"\/>[^<]*<a[^>]*>';
-        $title = "pants daily chump - ";
-
-    } elsif ($url =~ /paste\.husk\.org/i) {
-        $match = 'Summary: ';
-        $title = "paste - ";
-        return if $mess->{who} eq 'pasty';
-
-    } elsif ($url =~ /independent\.co\.uk/i) {
-        $match = '<h1 class=head1>';
-        $size = 32 * 1024;
-
+  my $param = shift;
+  my $data;
+  my $url;
+  my $type;
+  
+  if (ref($param)) {
+    if ($param->{data}) {
+      $data = $param->{data};
+    } elsif ($param->{url}) {
+      $url = $param->{url};
     } else {
-        $match = '<title>';
+      use Carp qw(croak);
+      croak("Expected a single parameter, or an 'url' or 'data' key");
     }
+  } else {
+    # url
+    $url = $param;
+  }
+  if (!$url and !$data) {
+    warn "Need at least an url or data";
+    return;
+  }
+  if ($url) {
+    if (-e $url) {
+      local $/ = undef;
+      unless (open DATA, $url) {
+        warn "$url looks like a file and isn't";
+        return;
+      }
+      $data = <DATA>;
+      close DATA;
+    } else {
+      if ($url =~ s/^itms:/http:/) {
+        $type = "itms";
+        $data = 1; # we don't need it, fake it.
+      } else {
+        $data = get_limited($url);
+      }
+    }
+  }
+  if (!$data) {
+    warn "Can't get content for $url";
+    return;
+  }
 
-    my $data = get_limited($url, $size) or return; # Can't get;
+  return undef unless $data;
 
-    $data =~ /$match([^<]+)/im or return; # "Can't find title";
+  $type ||= File::Type->new->checktype_contents($data);
+  #warn "type is $type\n";
 
-    $title .= $1;
-    $title =~ s/\s+$//;
-    $title =~ s/^\s+//;
-    $title =~ s/\n+//g;
-    $title =~ s/\s+/ /g;
-    $title = decode_entities($title);
-    return $title;
+  my $handlers = handlers();
+  my $handler = $handlers->{$type} || $handlers->{default}
+    or return;
 
+  return $handler->title($url, $data, $type);
 }
 
 1;

@@ -2,13 +2,17 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'PREREQ_PM' => {
-                           'LWP' => '0.01',
-                           'Test::More' => '0.01'
-                         },
-          'INSTALLDIRS' => 'site',
           'PL_FILES' => {},
+          'INSTALLDIRS' => 'site',
+          'NAME' => 'URI::Title',
           'VERSION_FROM' => 'lib/URI/Title.pm',
-          'NAME' => 'URI::Title'
+          'PREREQ_PM' => {
+                           'Test::More' => 0,
+                           'Module::Pluggable' => '1.2',
+                           'File::Type' => '0.22',
+                           'MP3::Info' => 0,
+                           'Image::Size' => 0,
+                           'LWP::Simple' => 0
+                         }
         )
 ;
