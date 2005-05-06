@@ -9,7 +9,11 @@ package URI::Title::HTML;
 use warnings;
 use strict;
 use HTML::Entities;
-use Encode qw(decode);
+our $CAN_USE_ENCODE;
+BEGIN {
+  eval { require Encode };
+  $CAN_USE_ENCODE = !$@;
+}
 
 sub types {(
   'text/html',
@@ -47,7 +51,7 @@ sub title {
     $match = '<h1 class=head1>';
 
   } else {
-    $match = '<title>';
+    $match = '<title.*?>';
   }
 
 
@@ -59,12 +63,21 @@ sub title {
   $data =~ /$match([^<]+)/im or return; # "Can't find title";
   $title .= $1;
 
-  $title = decode($cset, $title);
+  if ( $CAN_USE_ENCODE ) {
+    $title = eval { decode($cset, $title) } || $title;
+  }
+
   $title =~ s/\s+$//;
   $title =~ s/^\s+//;
   $title =~ s/\n+//g;
   $title =~ s/\s+/ /g;
+
+  #use Devel::Peek;
+  #Dump( $title );
+
   $title = decode_entities($title);
+
+  #Dump( $title );
 
   # decode nasty number-encoded entities. Mostly works
   $title =~ s/(&\#(\d+);?)/chr($2)/eg;

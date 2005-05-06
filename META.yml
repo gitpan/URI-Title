@@ -1,12 +1,12 @@
---- #YAML:1.0
+---
 name: URI-Title
-version: 1.50
+version: 1.60
 author: ~
-abstract: |-
-  get the titles of things on the web in a sensible way
+abstract: get the titles of things on the web in a sensible way
 license: perl
 requires:
   File::Type: 0.22
+  HTML::Parser: 3.45
   Image::Size: 0
   LWP::Simple: 0
   MP3::Info: 0
@@ -15,7 +15,7 @@ requires:
 provides:
   URI::Title:
     file: lib/URI/Title.pm
-    version: 1.50
+    version: 1.60
   URI::Title::HTML:
     file: lib/URI/Title/HTML.pm
   URI::Title::Image:
@@ -24,4 +24,4 @@ provides:
     file: lib/URI/Title/MP3.pm
   URI::Title::PDF:
     file: lib/URI/Title/PDF.pm
-generated_by: Module::Build version 0.25
+generated_by: Module::Build version 0.2609
