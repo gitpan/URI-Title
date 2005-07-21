@@ -62,7 +62,7 @@ use strict;
 use base qw(Exporter);
 our @EXPORT_OK = qw( title );
 
-our $VERSION = '1.60';
+our $VERSION = '1.61';
 
 use Module::Pluggable (search_path => ['URI::Title'], require => 1 );
 use File::Type;
@@ -204,7 +204,7 @@ sub title {
     }
   }
   if (!$data) {
-    warn "Can't get content for $url";
+    #warn "Can't get content for $url";
     return;
   }
 
