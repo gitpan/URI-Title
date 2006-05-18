@@ -6,9 +6,6 @@ use URI::Title qw(title);
 use Encode;
 
 my $title = title(shift);
-#use Devel::Peek;
-#Dump($title);
 binmode STDOUT, ":utf8";
-print $title;
-
-
+print $title || 'no title';
+print "\n";

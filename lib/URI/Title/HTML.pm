@@ -11,7 +11,7 @@ use strict;
 use HTML::Entities;
 our $CAN_USE_ENCODE;
 BEGIN {
-  eval { require Encode };
+  eval { require Encode; Encode->import('decode') };
   $CAN_USE_ENCODE = !$@;
 }
 
@@ -32,26 +32,26 @@ sub title {
   }
 
   if ($url =~ /timesonline\.co\.uk/i) {
-    $match = '<span class="headline">';
+    $match = '<span class="headline">(.*?)<';
 
   } elsif ($url =~ /use\.perl\.org\/~([^\/]+).*journal\/\d/i) {
-    $match = '<FONT FACE="geneva,verdana,sans-serif" SIZE="1"><B>';
+    $match = '<FONT FACE="geneva,verdana,sans-serif" SIZE="1"><B>(.*?)<';
     $title = "use.perl journal of $1 - ";
 
   } elsif ($url =~ /(pants\.heddley\.com|dailychump\.org).*#(.*)$/i) {
     my $id = $2;
-    $match = 'id="a'.$id.'.*?>.*?>.*?>';
+    $match = 'id="a'.$id.'.*?></a>(.*?)<';
     $title = "pants daily chump - ";
 
   } elsif ($url =~ /paste\.husk\.org/i) {
-    $match = 'Summary: ';
+    $match = 'Summary: (.*?)<';
     $title = "paste - ";
 
   } elsif ($url =~ /independent\.co\.uk/i) {
-    $match = '<h1 class=head1>';
+    $match = '<h1 class=head1>(.*?)<';
 
   } else {
-    $match = '<title.*?>';
+    $match = '<title.*?>(.*?)</title';
   }
 
 
@@ -60,11 +60,11 @@ sub title {
     $cset = lc($1);
   }
 
-  $data =~ /$match([^<]+)/im or return; # "Can't find title";
+  $data =~ /$match/ims or return; # "Can't find title";
   $title .= $1;
 
   if ( $CAN_USE_ENCODE ) {
-    $title = eval { decode($cset, $title) } || $title;
+    $title = eval { decode('utf-8', $title, 1) } ||  eval { decode($cset, $title) } || $title;
   }
 
   $title =~ s/\s+$//;

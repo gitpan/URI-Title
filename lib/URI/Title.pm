@@ -62,7 +62,7 @@ use strict;
 use base qw(Exporter);
 our @EXPORT_OK = qw( title );
 
-our $VERSION = '1.61';
+our $VERSION = '1.62';
 
 use Module::Pluggable (search_path => ['URI::Title'], require => 1 );
 use File::Type;
@@ -81,6 +81,12 @@ sub get_limited {
   my $req = HTTP::Request->new(GET => $url);
   $req->header( Range => "bytes=0-$size" );
   my $res = $ua->request($req);
+
+  # some servers don't like the Range header. If we
+  # get an odd 4xx response that isn't 404, just try getting
+  # the full thing. This may be a little impolite.
+  return get_all($url) if $res->code >= 400 and $res->code < 500 and $res->code != 404;
+
   return unless $res->is_success;
   return $res->content unless wantarray;
   my $cset = "iso-8859-1"; # default;
@@ -211,7 +217,6 @@ sub title {
   return undef unless $data;
 
   $type ||= File::Type->new->checktype_contents($data);
-  #warn "type is $type\n";
 
   my $handlers = handlers();
   my $handler = $handlers->{$type} || $handlers->{default}
