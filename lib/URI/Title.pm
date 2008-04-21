@@ -62,21 +62,28 @@ use strict;
 use base qw(Exporter);
 our @EXPORT_OK = qw( title );
 
-our $VERSION = '1.62';
+our $VERSION = '1.70';
 
 use Module::Pluggable (search_path => ['URI::Title'], require => 1 );
 use File::Type;
 
-use LWP::Simple;
 use LWP::UserAgent;
 use HTTP::Request;
 use HTTP::Response;
 
+
+sub ua {
+  my $ua = LWP::UserAgent->new;
+  $ua->agent("URI::Title/$VERSION");
+  $ua->timeout(20);
+  $ua->default_header('Accept-Encoding' => 'gzip');
+  return $ua;
+}
+
 sub get_limited {
   my $url = shift;
   my $size = shift || 16*1024;
-  my $ua = LWP::UserAgent->new;
-  $ua->timeout(20);
+  my $ua = ua();
   $ua->max_size($size);
   my $req = HTTP::Request->new(GET => $url);
   $req->header( Range => "bytes=0-$size" );
@@ -88,29 +95,31 @@ sub get_limited {
   return get_all($url) if $res->code >= 400 and $res->code < 500 and $res->code != 404;
 
   return unless $res->is_success;
-  return $res->content unless wantarray;
+  return $res->decoded_content unless wantarray;
   my $cset = "iso-8859-1"; # default;
   my $ct = $res->header("Content-type");
   if ($ct =~ /charset=\"?([\w-]+)/i) {
     $cset = lc($1);
     #warn "Got charset $cset from URI headers\n";
   }
-  return ($res->content, $cset);
+  return ($res->decoded_content, $cset);
 }
 
 sub get_end {
   my $url = shift;
   my $size = shift || 16*1024;
 
-  my (undef, $length) = head($url);
+  my $ua = ua();
+
+  my $request = HTTP::Request->new(HEAD => $url);
+  my $response = $ua->request($request);
+  my $length = $response->header('Content-Length');
 
   return unless $length; # We can't get the length, and we're _not_
                          # going to get the whole thing.
 
   my $start = $length - $size;
 
-  my $ua = LWP::UserAgent->new;
-  $ua->timeout(20);
   $ua->max_size($size);
 
   my $req = HTTP::Request->new(GET => $url);
@@ -118,29 +127,28 @@ sub get_end {
   my $res = $ua->request($req);
 
   return unless $res->is_success;
-  return $res->content unless wantarray;
+  return $res->decoded_content unless wantarray;
   my $cset = "iso-8859-1"; # default;
   my $ct = $res->header("Content-type");
   if ($ct =~ /charset=\"?(.*)\"?$/) {
     $cset = $1;
   }
-  return ($res->content, $cset);
+  return ($res->decoded_content, $cset);
 }
 
 sub get_all {
   my $url = shift;
-  my $ua = LWP::UserAgent->new;
-  $ua->timeout(20);
+  my $ua = ua();
   my $req = HTTP::Request->new(GET => $url);
   my $res = $ua->request($req);
   return unless $res->is_success;
-  return $res->content unless wantarray;
+  return $res->decoded_content unless wantarray;
   my $cset = "iso-8859-1"; # default;
   my $ct = $res->header("Content-type");
   if ($ct =~ /charset=\"?(.*)\"?$/) {
     $cset = $1;
   }
-  return ($res->content, $cset);
+  return ($res->decoded_content, $cset);
 }
 
 # cache

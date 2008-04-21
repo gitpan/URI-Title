@@ -1,9 +1,11 @@
 ---
 name: URI-Title
-version: 1.62
-author: ~
+version: 1.70
+author: []
 abstract: get the titles of things on the web in a sensible way
 license: perl
+resources:
+  license: http://dev.perl.org/licenses/
 requires:
   File::Type: 0.22
   HTML::Parser: 3.45
@@ -15,7 +17,7 @@ requires:
 provides:
   URI::Title:
     file: lib/URI/Title.pm
-    version: 1.62
+    version: 1.70
   URI::Title::HTML:
     file: lib/URI/Title/HTML.pm
   URI::Title::Image:
@@ -24,4 +26,7 @@ provides:
     file: lib/URI/Title/MP3.pm
   URI::Title::PDF:
     file: lib/URI/Title/PDF.pm
-generated_by: Module::Build version 0.2612
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2

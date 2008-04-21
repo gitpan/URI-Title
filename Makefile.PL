@@ -5,6 +5,7 @@ WriteMakefile
           'PL_FILES' => {},
           'INSTALLDIRS' => 'site',
           'NAME' => 'URI::Title',
+          'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/URI/Title.pm',
           'PREREQ_PM' => {
                            'Test::More' => 0,
