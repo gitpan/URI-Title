@@ -35,6 +35,17 @@ sub title {
     return URI::Title::iTMS->title($1);
   }
 
+  # TODO - work this out from the headers of the HTML
+  if ($data =~ /charset=\"?([\w-]+)/i) {
+    $cset = lc($1);
+  }
+
+  if ( $CAN_USE_ENCODE ) {
+    $data = eval { decode('utf-8', $data, 1) } ||  eval { decode($cset, $data, 1) } || $data;
+  }
+
+  my $found_title;
+  
   if ($url =~ /use\.perl\.org\/~([^\/]+).*journal\/\d/i) {
     $special_case = '<FONT FACE="geneva,verdana,sans-serif" SIZE="1"><B>(.+?)<';
     $title = "use.perl journal of $1 - ";
@@ -58,28 +69,22 @@ sub title {
   } elsif ($url =~ /www\.hs\.fi\/english\/article/i) {
     $special_case = '<h1>(.+?)</h1>';
   
-  }
-
-
-  # TODO - work this out from the headers of the HTML
-  if ($data =~ /charset=\"?([\w-]+)/i) {
-    $cset = lc($1);
-  }
-
-  if ( $CAN_USE_ENCODE ) {
-    $data = eval { decode('utf-8', $data, 1) } ||  eval { decode($cset, $data, 1) } || $data;
-  }
+  } elsif ($url =~ /google.com/i and $data =~ /calc_img/) {
+    # google can be used as a calculator. Try to find the result.
+    $special_case = 'calc_img.*<td nowrap>(.+?)</td';
   
+  }
 
-  my $found_title;
-  if ($special_case) {
+
+  if (!$found_title and $special_case) {
     ($found_title) = $data =~ /$special_case/ims;
   }
-  unless ($found_title) {
+  if (!$found_title) {
     ($found_title) = $data =~ /$default_match/ims;
   }
-  return unless $found_title;
+  $found_title =~ s/<sup>(.+?)<\/sup>/^$1/g; # for the google math output
   $found_title =~ s/<.*?>//g;
+  return unless $found_title;
   $title .= $found_title;
 
 

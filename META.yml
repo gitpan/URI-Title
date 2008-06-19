@@ -1,32 +1,19 @@
----
-name: URI-Title
-version: 1.70
-author: []
-abstract: get the titles of things on the web in a sensible way
-license: perl
-resources:
-  license: http://dev.perl.org/licenses/
-requires:
-  File::Type: 0.22
-  HTML::Parser: 3.45
-  Image::Size: 0
-  LWP::Simple: 0
-  MP3::Info: 0
-  Module::Pluggable: 1.2
-  Test::More: 0
-provides:
-  URI::Title:
-    file: lib/URI/Title.pm
-    version: 1.70
-  URI::Title::HTML:
-    file: lib/URI/Title/HTML.pm
-  URI::Title::Image:
-    file: lib/URI/Title/Image.pm
-  URI::Title::MP3:
-    file: lib/URI/Title/MP3.pm
-  URI::Title::PDF:
-    file: lib/URI/Title/PDF.pm
-generated_by: Module::Build version 0.2808
+--- #YAML:1.0
+name:                URI-Title
+version:             1.80
+abstract:            ~
+license:             ~
+author:              ~
+generated_by:        ExtUtils::MakeMaker version 6.44
+distribution_type:   module
+requires:     
+    File::Type:                    0.22
+    HTML::Parser:                  3.45
+    Image::Size:                   0
+    LWP::Simple:                   0
+    Module::Pluggable:             1.2
+    MP3::Info:                     0
+    Test::More:                    0
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

@@ -1,4 +1,3 @@
-Build.PL
 Changes
 lib/URI/Title.pm
 lib/URI/Title/HTML.pm
@@ -7,10 +6,9 @@ lib/URI/Title/MP3.pm
 lib/URI/Title/PDF.pm
 Makefile.PL
 MANIFEST
-META.yml
-NINJA
 t/00bootstrap.t
 t/failure.t
 t/html.t
 t/other.t
 title.pl
+META.yml                                 Module meta-data (added by MakeMaker)
