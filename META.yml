@@ -1,19 +1,27 @@
 --- #YAML:1.0
-name:                URI-Title
-version:             1.82
-abstract:            ~
-license:             ~
-author:              ~
-generated_by:        ExtUtils::MakeMaker version 6.44
-distribution_type:   module
-requires:     
-    File::Type:                    0.22
-    HTML::Parser:                  3.45
-    Image::Size:                   0
-    LWP::Simple:                   0
-    Module::Pluggable:             1.2
-    MP3::Info:                     0
-    Test::More:                    0
+name:               URI-Title
+version:            1.85
+abstract:           ~
+author:  []
+license:            unknown
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
+requires:
+    File::Type:         0.22
+    HTML::Parser:       3.45
+    Image::Size:        0
+    LWP::Simple:        0
+    Module::Pluggable:  1.2
+    MP3::Info:          0
+    Test::More:         0
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.56
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
-    version: 1.3
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4

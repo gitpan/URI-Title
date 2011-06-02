@@ -59,9 +59,9 @@ sub title {
     $special_case = 'Summary: (.+?)<';
     $title = "paste - ";
 
-  } elsif ($url =~ /twitter.com\/(.*?)\/statuses\/\d+/i) {
-    $special_case = '<div class="desc">\s*<p>\s*(.+?)\s*</p';
-    $title = "twitter by $1 - ";
+  } elsif ($url =~ /twitter.com\/(.*?)\/status(es)?\/\d+/i) {
+    $special_case = '<span class="entry-content">(.+?)</span';
+    $title = "twitter - ";
 
   } elsif ($url =~ /independent\.co\.uk/i) {
     $special_case = '<h1 class=head1>(.+?)<';
@@ -73,8 +73,10 @@ sub title {
     # google can be used as a calculator. Try to find the result.
     $special_case = 'calc_img.*<td nowrap>(.+?)</td';
   
-  }
+  } elsif ($url =~ /spotify\.url\.fi/) {
+    $special_case = '<title>\s*(.+?)\s+&mdash;\s+Decode\s+Spotify\s+URIs\s*</title>';
 
+  }
 
   if (!$found_title and $special_case) {
     ($found_title) = $data =~ /$special_case/ims;
@@ -82,9 +84,10 @@ sub title {
   if (!$found_title) {
     ($found_title) = $data =~ /$default_match/ims;
   }
+  return unless $found_title;
+
   $found_title =~ s/<sup>(.+?)<\/sup>/^$1/g; # for the google math output
   $found_title =~ s/<.*?>//g;
-  return unless $found_title;
   $title .= $found_title;
 
 
