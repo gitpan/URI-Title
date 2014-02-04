@@ -1,4 +1,5 @@
 Changes
+eg/title.pl
 lib/URI/Title.pm
 lib/URI/Title/HTML.pm
 lib/URI/Title/Image.pm
@@ -6,9 +7,11 @@ lib/URI/Title/MP3.pm
 lib/URI/Title/PDF.pm
 Makefile.PL
 MANIFEST
+README
 t/00bootstrap.t
 t/failure.t
 t/html.t
-t/other.t
-title.pl
-META.yml                                 Module meta-data (added by MakeMaker)
+xt/pod-coverage.t
+xt/pod.t
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)

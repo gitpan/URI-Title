@@ -47,9 +47,13 @@ Many, many, many things. Still unimplemented:
 
 =item Better error reporting.
 
-=head1 AUTHOR
+=back
 
-Tom Insam E<lt>tom@jerakeen.orgE<gt>
+=head1 AUTHORS
+
+Tom Insam E<lt>tom@jerakeen.orgE<gt>, original author, 2004-2012.
+
+Philippe Bruhat (BooK) E<lt>book@cpan.orgE<gt>, maintainer, 2014.
 
 This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
@@ -69,7 +73,7 @@ use strict;
 use base qw(Exporter);
 our @EXPORT_OK = qw( title );
 
-our $VERSION = '1.86';
+our $VERSION = '1.87';
 
 use Module::Pluggable (search_path => ['URI::Title'], require => 1 );
 use File::Type;
