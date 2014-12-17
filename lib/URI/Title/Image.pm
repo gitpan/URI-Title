@@ -1,10 +1,5 @@
-=head1 NAME
-
-URI::Title::Image - get titles of images
-
-=cut
-
 package URI::Title::Image;
+$URI::Title::Image::VERSION = '1.900';
 use warnings;
 use strict;
 
@@ -29,3 +24,13 @@ sub title {
 }
 
 1;
+
+__END__
+
+=for Pod::Coverage::TrustPod types title
+
+=head1 NAME
+
+URI::Title::Image - get titles of images
+
+=cut
